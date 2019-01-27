@@ -1,0 +1,38 @@
+version: '3.5'
+
+services:
+
+  app:
+    container_name: app
+    build:
+      context: .
+    volumes:
+      - '.:/var/www'
+    entrypoint: php vendor/bin/phpunit
+    ports:
+      - '8080:80'
+    depends_on:
+      - composer
+      - db
+
+  db:
+    container_name: db
+    image: mysql:5.7
+    restart: 'no'
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: app
+    ports:
+      - '3306:3306'
+    volumes:
+      - db-data:/var/lib/mysql
+
+  composer:
+    restart: 'no'
+    image: composer
+    command: install
+    volumes:
+      - .:/app
+
+volumes:
+  db-data:

@@ -1,0 +1,34 @@
+{
+    "name": "hidalgo-rides/intersect-blog",
+    "description": "Blog abstraction layer built on top of the Intersect database layer",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [],
+    "authors": [
+      {
+        "name": "Tim Kipp",
+        "email": "timkipp.22.developer@gmail.com"
+      }
+    ],
+    "autoload" : {
+      "psr-4" : {
+        "Intersect\\Blog\\" : "src/"
+      }
+    },
+    "autoload-dev" : {
+      "psr-4" : {
+        "Tests\\" : "tests/"
+      }
+    },
+    "require": {
+      "intersect/intersect-core": "^1.0.0",
+      "intersect/intersect-database": "1.0.0"
+    },
+    "require-dev": {
+      "phpunit/phpunit": "^7"
+    },
+    "config": {
+      "discard-changes": true
+    }
+  }
+  
