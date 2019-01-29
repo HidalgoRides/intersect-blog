@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "24cf4c9619f5e4e729a7cd8b4b4bacee",
+    "content-hash": "f4a2f5f3ebf7547063de946b558e4139",
     "packages": [
         {
-            "name": "intersect/intersect-core",
-            "version": "dev-develop",
+            "name": "hidalgo-rides/intersect-core",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
-                "url": "https://bitbucket.org/hidalgorides/intersect-core.git",
-                "reference": "06cd7f28ed56a4158671c644ed9054f8d9d540c9"
+                "url": "https://github.com/HidalgoRides/intersect-core.git",
+                "reference": "4a54fc1d6001e028a68d39bb6fd0a139a13c5338"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://bitbucket.org/hidalgorides/intersect-core/get/06cd7f28ed56a4158671c644ed9054f8d9d540c9.zip",
-                "reference": "06cd7f28ed56a4158671c644ed9054f8d9d540c9",
+                "url": "https://api.github.com/repos/HidalgoRides/intersect-core/zipball/4a54fc1d6001e028a68d39bb6fd0a139a13c5338",
+                "reference": "4a54fc1d6001e028a68d39bb6fd0a139a13c5338",
                 "shasum": ""
             },
             "require": {
@@ -32,11 +32,7 @@
                     "Intersect\\Core\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -46,29 +42,25 @@
                     "email": "timkipp.22.developer@gmail.com"
                 }
             ],
-            "description": "Intersect Core",
-            "homepage": "https://bitbucket.org/hidalgorides/intersect-core",
-            "support": {
-                "source": "https://bitbucket.org/hidalgorides/intersect-core/src/06cd7f28ed56a4158671c644ed9054f8d9d540c9/?at=develop"
-            },
-            "time": "2019-01-17T04:38:53+00:00"
+            "description": "Common classes used throughout Intersect libraries and projects.",
+            "time": "2019-01-29T03:58:53+00:00"
         },
         {
-            "name": "intersect/intersect-database",
-            "version": "dev-develop",
+            "name": "hidalgo-rides/intersect-database",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
-                "url": "https://bitbucket.org/hidalgorides/intersect-database.git",
-                "reference": "00b8eac4f31d873a613d49658caca1ab925e3521"
+                "url": "https://github.com/HidalgoRides/intersect-database.git",
+                "reference": "5dc0ac77a19d15ae4fe80bde015b1a0a5bc3a3ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://bitbucket.org/hidalgorides/intersect-database/get/00b8eac4f31d873a613d49658caca1ab925e3521.zip",
-                "reference": "00b8eac4f31d873a613d49658caca1ab925e3521",
+                "url": "https://api.github.com/repos/HidalgoRides/intersect-database/zipball/5dc0ac77a19d15ae4fe80bde015b1a0a5bc3a3ff",
+                "reference": "5dc0ac77a19d15ae4fe80bde015b1a0a5bc3a3ff",
                 "shasum": ""
             },
             "require": {
-                "intersect/intersect-core": "dev-develop"
+                "hidalgo-rides/intersect-core": "^1.0"
             },
             "require-dev": {
                 "phpunit/phpunit": "^7"
@@ -79,11 +71,7 @@
                     "Intersect\\Database\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -93,12 +81,8 @@
                     "email": "timkipp.22.developer@gmail.com"
                 }
             ],
-            "description": "Intersect Database",
-            "homepage": "https://bitbucket.org/hidalgorides/intersect-database",
-            "support": {
-                "source": "https://bitbucket.org/hidalgorides/intersect-database/src/00b8eac4f31d873a613d49658caca1ab925e3521/?at=develop"
-            },
-            "time": "2019-01-17T04:50:53+00:00"
+            "description": "Database abstraction layer used throughout Intersect libraries and projects.",
+            "time": "2019-01-29T04:25:14+00:00"
         }
     ],
     "packages-dev": [
@@ -1024,16 +1008,16 @@
         },
         {
             "name": "sebastian/environment",
-            "version": "4.0.1",
+            "version": "4.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/environment.git",
-                "reference": "febd209a219cea7b56ad799b30ebbea34b71eb8f"
+                "reference": "4a43e9af57b4afa663077b9bc85255dbc6e8a2bd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/febd209a219cea7b56ad799b30ebbea34b71eb8f",
-                "reference": "febd209a219cea7b56ad799b30ebbea34b71eb8f",
+                "url": "https://api.github.com/repos/sebastianbergmann/environment/zipball/4a43e9af57b4afa663077b9bc85255dbc6e8a2bd",
+                "reference": "4a43e9af57b4afa663077b9bc85255dbc6e8a2bd",
                 "shasum": ""
             },
             "require": {
@@ -1070,7 +1054,7 @@
                 "environment",
                 "hhvm"
             ],
-            "time": "2018-11-25T09:31:21+00:00"
+            "time": "2019-01-28T15:26:03+00:00"
         },
         {
             "name": "sebastian/exporter",
@@ -1572,10 +1556,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "intersect/intersect-core": 20,
-        "intersect/intersect-database": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
