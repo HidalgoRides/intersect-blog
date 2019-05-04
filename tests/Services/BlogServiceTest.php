@@ -350,6 +350,40 @@ class BlogServiceTest extends TestCase {
         $this->assertEmpty($this->blogService->getAllPostsWithTagName($createdTag->name));
     }
 
+    public function test_getAllPostsWithTagNames()
+    {
+        $tagName1 = 'tag-name-1';
+        $tagName2 = 'tag-name-2';
+
+        $this->blogService->createPostWithTags($this->getSamplePost(), [$tagName1]);
+        $this->blogService->createPostWithTags($this->getSamplePost(), [$tagName2]);
+
+        $allPosts = $this->blogService->getAllPostsWithTagNames([
+            $tagName1,
+            $tagName2
+        ]);
+
+        $this->assertNotEmpty($allPosts);
+        $this->assertEquals(2, count($allPosts));
+    }
+
+    public function test_getAllPostsWithTagNames_withLimit()
+    {
+        $tagName1 = 'tag-name-1';
+        $tagName2 = 'tag-name-2';
+
+        $this->blogService->createPostWithTags($this->getSamplePost(), [$tagName1]);
+        $this->blogService->createPostWithTags($this->getSamplePost(), [$tagName2]);
+
+        $allPosts = $this->blogService->getAllPostsWithTagNames([
+            $tagName1,
+            $tagName2
+        ], 1);
+
+        $this->assertNotEmpty($allPosts);
+        $this->assertEquals(1, count($allPosts));
+    }
+
     public function test_getAllPostsInCategoryId()
     {
         $category = $this->blogService->createCategory($this->getSampleCategory());
@@ -554,6 +588,19 @@ class BlogServiceTest extends TestCase {
     public function test_getTagByName_notFound()
     {
         $this->assertNull($this->blogService->getTagByName('not-found'));
+    }
+
+    public function test_getTagsByNames()
+    {
+        $tag1 = $this->getSampleTag();
+        $this->blogService->createTag($tag1);
+
+        $tag2 = $this->getSampleTag();
+        $this->blogService->createTag($tag2);
+
+        $tags = $this->blogService->getTagsByNames([$tag1->name, $tag2->name]);
+        $this->assertNotEmpty($tags);
+        $this->assertCount(2, $tags);
     }
 
     public function test_removeTagsFromPostId()

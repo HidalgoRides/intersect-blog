@@ -274,24 +274,50 @@ class BlogService {
      */
     public function getAllPostsWithTagName($name, $limit = null)
     {
-        $tag = $this->getTagByName($name);
+        return $this->getAllPostsWithTagNames([$name], $limit);
+    }
 
-        if (is_null($tag))
+    /**
+     * @param $name
+     * @param null $limit
+     * @return Post[]
+     * @throws DatabaseException
+     */
+    public function getAllPostsWithTagNames(array $tagNames, $limit = null)
+    {
+        $tags = $this->getTagsByNames($tagNames);
+
+        if (count($tags) == 0)
         {
             return [];
         }
+        
+        $allPostIds = [];
 
-        $postTagAssociations = PostTagAssociation::findAssociationsForColumnTwo($tag->getPrimaryKeyValue());
+        foreach ($tags as $tag)
+        {
+            $postTagAssociations = PostTagAssociation::findAssociationsForColumnTwo($tag->getPrimaryKeyValue());
 
-        $postIds = array_column($postTagAssociations, 'post_id');
+            $postIds = array_column($postTagAssociations, 'post_id');
 
-        if (count($postIds) == 0)
+            foreach ($postIds as $postId)
+            {
+                if (in_array($postId, $allPostIds))
+                {
+                    continue;
+                }
+
+                $allPostIds[] = $postId;
+            }
+        }
+
+        if (count($allPostIds) == 0)
         {
             return [];
         }
 
         $postParameters = new QueryParameters();
-        $postParameters->in('id', $postIds);
+        $postParameters->in('id', $allPostIds);
         $postParameters->setOrder('date_created DESC');
 
         if (!is_null($limit) && ((int) $limit) > 0)
@@ -465,6 +491,24 @@ class BlogService {
         $tagParameters->equals('name', $name);
 
         return Tag::findOne($tagParameters);
+    }
+
+    /**
+     * @param $names
+     * @return Tag[]
+     * @throws DatabaseException
+     */
+    public function getTagsByNames(array $names)
+    {
+        foreach ($names as &$name)
+        {
+            $name = $this->createSlug($name);
+        }
+
+        $tagParameters = new QueryParameters();
+        $tagParameters->in('name', $names, true);
+
+        return Tag::find($tagParameters);
     }
 
     /**
