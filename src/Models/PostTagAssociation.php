@@ -13,8 +13,28 @@ class PostTagAssociation extends AssociativeModel {
     {
         parent::__construct();
 
-        $this->setAttribute('post_id', $postId);
-        $this->setAttribute('tag_id', $tagId);
+        $this->post_id = $postId;
+        $this->tag_id = $tagId;
+    }
+
+    public function getPostId()
+    {
+        return $this->post_id;
+    }
+
+    public function setPostId($postId)
+    {
+        $this->post_id = $postId;
+    }
+
+    public function getTagId()
+    {
+        return $this->tag_id;
+    }
+
+    public function setTagId($tagId)
+    {
+        $this->tag_id = $tagId;
     }
 
     protected function getColumnOneName()

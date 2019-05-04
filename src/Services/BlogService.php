@@ -31,7 +31,7 @@ class BlogService {
         foreach ($tags as $tag)
         {
             $newTag = new Tag();
-            $newTag->name = $tag;
+            $newTag->setName($tag);
 
             $createdTag = $this->createTag($newTag);
 
@@ -52,7 +52,7 @@ class BlogService {
      */
     public function createCategory(Category $category)
     {
-        $category->id = null;
+        $category->setId(null);
         return $this->saveCategory($category);
     }
 
@@ -76,7 +76,7 @@ class BlogService {
      */
     public function createPostWithTags(Post $post, array $tags)
     {
-        $post->id = null;
+        $post->setId(null);
         $createdPost = $this->savePost($post);
 
         if (!is_null($createdPost) && count($tags) > 0)
@@ -164,7 +164,7 @@ class BlogService {
             return false;
         }
 
-        $category->status = 2;
+        $category->setStatus(2);
 
         return $category->save();
     }
@@ -187,7 +187,7 @@ class BlogService {
             return false;
         }
 
-        $post->status = 2;
+        $post->setStatus(2);
 
         return $post->save();
     }
@@ -459,7 +459,7 @@ class BlogService {
      */
     public function getTagByName($name)
     {
-        $name = $this->createSlug(trim($name));
+        $name = $this->createSlug($name);
 
         $tagParameters = new QueryParameters();
         $tagParameters->equals('name', $name);
@@ -536,7 +536,7 @@ class BlogService {
      */
     public function updateCategory(Category $category, $categoryId)
     {
-        $category->id = (int) $categoryId;
+        $category->setId((int) $categoryId);
 
         return $this->saveCategory($category);
     }
@@ -550,7 +550,7 @@ class BlogService {
      */
     public function updatePost(Post $post, $postId)
     {
-        $post->id = (int) $postId;
+        $post->setId((int) $postId);
 
         return $this->savePost($post);
     }
@@ -662,17 +662,17 @@ class BlogService {
      */
     private function saveCategory(Category $category)
     {
-        $category->name = trim($category->name);
-        $newSlug = $this->createSlug($category->name);
+        $category->setName(trim($category->getName()));
+        $newSlug = $this->createSlug($category->getName());
         $category->slug = $newSlug;
 
-        if (is_null($category->status))
+        if (is_null($category->getStatus()))
         {
-            $category->status = 1;
+            $category->setStatus(1);
         }
 
         $previousCategory = Category::findById($category->getPrimaryKeyValue());
-        if (is_null($previousCategory) || $previousCategory->slug != $newSlug)
+        if (is_null($previousCategory) || $previousCategory->getSlug() != $newSlug)
         {
             $categoryParameters = new QueryParameters();
             $categoryParameters->equals('slug', $newSlug);
@@ -681,7 +681,7 @@ class BlogService {
 
             if (!is_null($existingCategoryWithNewSlug))
             {
-                throw new ValidationException($category, ['Category already exists with name: ' . $category->name]);
+                throw new ValidationException($category, ['Category already exists with name: ' . $category->getName()]);
             }
         }
 
@@ -696,12 +696,12 @@ class BlogService {
      */
     private function savePost(Post $post)
     {
-        $post->title = trim($post->title);
-        $newSlug = $this->createSlug($post->title);
+        $post->setTitle(trim($post->getTitle()));
+        $newSlug = $this->createSlug($post->getTitle());
         $post->slug = $newSlug;
 
         $previousPost = Post::findById($post->getPrimaryKeyValue());
-        if (is_null($previousPost) || $previousPost->slug != $newSlug)
+        if (is_null($previousPost) || $previousPost->getSlug() != $newSlug)
         {
             $postParameters = new QueryParameters();
             $postParameters->equals('slug', $newSlug);
@@ -710,7 +710,7 @@ class BlogService {
 
             if (!is_null($existingPostWithNewSlug))
             {
-                throw new ValidationException($post, ['Post already exists with title: ' . $post->title]);
+                throw new ValidationException($post, ['Post already exists with title: ' . $post->getTitle()]);
             }
         }
 
@@ -725,10 +725,10 @@ class BlogService {
      */
     private function saveTag(Tag $tag)
     {
-        $tag->name = $this->createSlug(trim($tag->name));
+        $tag->setName($this->createSlug($tag->getName()));
 
         $tagParameters = new QueryParameters();
-        $tagParameters->equals('name', $tag->name);
+        $tagParameters->equals('name', $tag->getName());
 
         $createdTag = Tag::findOne($tagParameters);
 
