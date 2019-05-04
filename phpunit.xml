@@ -22,4 +22,9 @@
     <listeners>
         <listener class="Tests\IntegrationTestListener" file="./tests/IntegrationTestListener.php" />
     </listeners>
+    <php>
+        <ini name="error_reporting" value="E_ALL" />
+        <ini name="display_errors" value="1" />
+        <ini name="display_startup_errors" value="1" />
+    </php>
 </phpunit>
