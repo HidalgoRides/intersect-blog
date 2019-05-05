@@ -12,6 +12,9 @@ use Intersect\Database\Query\QueryParameters;
 
 class BlogService {
 
+    private static $PUBLISHED = 1;
+    private static $DISABLED = 2;
+
     /**
      * @param $postId
      * @param array $tags
@@ -164,7 +167,7 @@ class BlogService {
             return false;
         }
 
-        $category->setStatus(2);
+        $category->setStatus(self::$DISABLED);
 
         return $category->save();
     }
@@ -187,7 +190,7 @@ class BlogService {
             return false;
         }
 
-        $post->setStatus(2);
+        $post->setStatus(self::$DISABLED);
 
         return $post->save();
     }
@@ -204,7 +207,7 @@ class BlogService {
 
         if ($onlyActive)
         {
-            $categoryParameters->equals('status', 1);
+            $categoryParameters->equals('status', self::$PUBLISHED);
         }
 
         if (!is_null($limit) && ((int) $limit) > 0)
@@ -242,10 +245,29 @@ class BlogService {
 
         if ($onlyActive)
         {
-            $categoryParameters->equals('status', 1);
+            $categoryParameters->equals('status', self::$PUBLISHED);
         }
 
         return Category::find($categoryParameters);
+    }
+
+    /**
+     * @param null $limit
+     * @return Post[]
+     * @throws DatabaseException
+     */
+    public function getAllActivePosts($limit = null)
+    {
+        $postParameters = new QueryParameters();
+        $postParameters->setOrder('date_created DESC');
+        $postParameters->equals('status', self::$PUBLISHED);
+
+        if (!is_null($limit) && ((int) $limit) > 0)
+        {
+            $postParameters->setLimit($limit);
+        }
+
+        return Post::find($postParameters);
     }
 
     /**
@@ -361,7 +383,7 @@ class BlogService {
 
         if ($onlyActive)
         {
-            $postParameters->equals('status', 1);
+            $postParameters->equals('status', self::$PUBLISHED);
         }
 
         if (!is_null($limit) && ((int) $limit) > 0)
@@ -442,7 +464,7 @@ class BlogService {
     {
         $postParameters = new QueryParameters();
         $postParameters->setOrder('date_created DESC');
-        $postParameters->equals('status', 1);
+        $postParameters->equals('status', self::$PUBLISHED);
 
         if (!is_null($limit) && ((int) $limit) > 0)
         {
@@ -509,6 +531,30 @@ class BlogService {
         $tagParameters->in('name', $names, true);
 
         return Tag::find($tagParameters);
+    }
+
+    /**
+     * @param Category $category
+     * @return Category
+     * @throws DatabaseException
+     * @throws ValidationException
+     */
+    public function publishCategory(Category $category)
+    {
+        $category->setStatus(self::$PUBLISHED);
+        return $this->updateCategory($category, $category->getId());
+    }
+
+    /**
+     * @param Post $post
+     * @return Post
+     * @throws DatabaseException
+     * @throws ValidationException
+     */
+    public function publishPost(Post $post)
+    {
+        $post->setStatus(self::$PUBLISHED);
+        return $this->updatePost($post, $post->getId());
     }
 
     /**
@@ -666,7 +712,7 @@ class BlogService {
 
         if ($onlyActive)
         {
-            $categoryParameters->equals('status', 1);
+            $categoryParameters->equals('status', self::$PUBLISHED);
         }
 
         /** @var Category $childCategory */
@@ -712,7 +758,7 @@ class BlogService {
 
         if (is_null($category->getStatus()))
         {
-            $category->setStatus(1);
+            $category->setStatus(self::$PUBLISHED);
         }
 
         $previousCategory = Category::findById($category->getPrimaryKeyValue());
@@ -743,6 +789,11 @@ class BlogService {
         $post->setTitle(trim($post->getTitle()));
         $newSlug = $this->createSlug($post->getTitle());
         $post->slug = $newSlug;
+
+        if (is_null($post->getStatus()))
+        {
+            $post->setStatus(self::$PUBLISHED);
+        }
 
         $previousPost = Post::findById($post->getPrimaryKeyValue());
         if (is_null($previousPost) || $previousPost->getSlug() != $newSlug)

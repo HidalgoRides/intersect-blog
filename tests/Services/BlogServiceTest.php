@@ -14,6 +14,9 @@ use Intersect\Database\Exception\ValidationException;
 
 class BlogServiceTest extends TestCase {
 
+    private static $PUBLISHED = 1;
+    private static $DISABLED = 2;
+
     /** @var BlogService */
     private $blogService;
 
@@ -40,13 +43,13 @@ class BlogServiceTest extends TestCase {
         $existingTags = $this->blogService->getAllTagsForPostId($createdPost->id);
         $this->assertEmpty($existingTags);
 
-        $this->blogService->addTagsToPostId($createdPost->id, [$tagName]);
+        $this->blogService->addTagsToPostId($createdPost->getId(), [$tagName]);
 
-        $existingTags = $this->blogService->getAllTagsForPostId($createdPost->id);
+        $existingTags = $this->blogService->getAllTagsForPostId($createdPost->getId());
         $this->assertEquals(1, count($existingTags));
 
         $existingTag = $existingTags[0];
-        $this->assertEquals($tagName, $existingTag->name);
+        $this->assertEquals($tagName, $existingTag->getName());
     }
 
     public function test_addTagsToPostId_postNotFound()
@@ -61,9 +64,9 @@ class BlogServiceTest extends TestCase {
         $createdCategory = $this->blogService->createCategory($category);
 
         $this->assertNotNull($createdCategory);
-        $this->assertEquals($category->name, $createdCategory->name);
-        $this->assertNotNull($createdCategory->slug);
-        $this->assertEquals(1, $createdCategory->status);
+        $this->assertEquals($category->getName(), $createdCategory->getName());
+        $this->assertNotNull($createdCategory->getSlug());
+        $this->assertEquals(self::$PUBLISHED, $createdCategory->getStatus());
     }
 
     public function test_createPost()
@@ -73,10 +76,10 @@ class BlogServiceTest extends TestCase {
         $createdPost = $this->blogService->createPost($post);
 
         $this->assertNotNull($createdPost);
-        $this->assertEquals($post->title, $createdPost->title);
-        $this->assertEquals($post->body, $createdPost->body);
-        $this->assertNotNull($createdPost->slug);
-        $this->assertEquals(1, $createdPost->status);
+        $this->assertEquals($post->getTitle(), $createdPost->getTitle());
+        $this->assertEquals($post->getBody(), $createdPost->getBody());
+        $this->assertNotNull($createdPost->getSlug());
+        $this->assertEquals(self::$PUBLISHED, $createdPost->getStatus());
     }
 
     public function test_createPost_withMetaData()
@@ -87,9 +90,9 @@ class BlogServiceTest extends TestCase {
         $createdPost = $this->blogService->createPost($post);
 
         $this->assertNotNull($createdPost);
-        $this->assertEquals($post->title, $createdPost->title);
-        $this->assertEquals($post->body, $createdPost->body);
-        $this->assertNotNull($createdPost->slug);
+        $this->assertEquals($post->getTitle(), $createdPost->getTitle());
+        $this->assertEquals($post->getBody(), $createdPost->getBody());
+        $this->assertNotNull($createdPost->getSlug());
 
         $metaData = $createdPost->getMetaData();
 
@@ -105,16 +108,16 @@ class BlogServiceTest extends TestCase {
         $createdPost = $this->blogService->createPostWithTags($post, [$tagName]);
 
         $this->assertNotNull($createdPost);
-        $this->assertEquals($post->title, $createdPost->title);
-        $this->assertEquals($post->body, $createdPost->body);
-        $this->assertNotNull($createdPost->slug);
+        $this->assertEquals($post->getTitle(), $createdPost->getTitle());
+        $this->assertEquals($post->getBody(), $createdPost->getBody());
+        $this->assertNotNull($createdPost->getSlug());
 
-        $createdTags = $this->blogService->getAllTagsForPostId($createdPost->id);
+        $createdTags = $this->blogService->getAllTagsForPostId($createdPost->getId());
         $this->assertNotEmpty($createdTags);
         $this->assertEquals(1, count($createdTags));
 
         $tag = $createdTags[0];
-        $this->assertEquals($tagName, $tag->name);
+        $this->assertEquals($tagName, $tag->getName());
     }
 
     public function test_createTag()
@@ -124,7 +127,7 @@ class BlogServiceTest extends TestCase {
         $createdTag = $this->blogService->createTag($tag);
 
         $this->assertNotNull($createdTag);
-        $this->assertEquals($tag->name, $createdTag->name);
+        $this->assertEquals($tag->getName(), $createdTag->getName());
     }
 
     public function test_deletePostById()
@@ -132,10 +135,10 @@ class BlogServiceTest extends TestCase {
         $post = $this->getSamplePost();
         $createdPost = $this->blogService->createPost($post);
 
-        $this->assertNotNull($this->blogService->getPostById($createdPost->id));
+        $this->assertNotNull($this->blogService->getPostById($createdPost->getId()));
 
-        $this->assertTrue($this->blogService->deletePostById($createdPost->id));
-        $this->assertNull($this->blogService->getPostById($createdPost->id));
+        $this->assertTrue($this->blogService->deletePostById($createdPost->getId()));
+        $this->assertNull($this->blogService->getPostById($createdPost->getId()));
     }
 
     public function test_deletePostById_postNotFound()
@@ -148,16 +151,16 @@ class BlogServiceTest extends TestCase {
         $post = $this->getSamplePost();
         $createdPost = $this->blogService->createPostWithTags($post, ['delete-me']);
 
-        $this->assertNotNull($this->blogService->getPostById($createdPost->id));
+        $this->assertNotNull($this->blogService->getPostById($createdPost->getId()));
 
-        $associations = PostTagAssociation::findAssociationsForColumnOne($createdPost->id);
+        $associations = PostTagAssociation::findAssociationsForColumnOne($createdPost->getId());
         $this->assertNotNull($associations);
         $this->assertEquals(1, count($associations));
 
-        $this->assertTrue($this->blogService->deletePostById($createdPost->id));
-        $this->assertNull($this->blogService->getPostById($createdPost->id));
+        $this->assertTrue($this->blogService->deletePostById($createdPost->getId()));
+        $this->assertNull($this->blogService->getPostById($createdPost->getId()));
 
-        $associations = PostTagAssociation::findAssociationsForColumnOne($createdPost->id);
+        $associations = PostTagAssociation::findAssociationsForColumnOne($createdPost->getId());
         $this->assertNotNull($associations);
         $this->assertEquals(0, count($associations));
     }
@@ -167,10 +170,10 @@ class BlogServiceTest extends TestCase {
         $category = $this->getSampleCategory();
         $createdCategory = $this->blogService->createCategory($category);
 
-        $this->assertNotNull($this->blogService->getCategoryById($createdCategory->id));
+        $this->assertNotNull($this->blogService->getCategoryById($createdCategory->getId()));
 
-        $this->assertTrue($this->blogService->deleteCategoryById($createdCategory->id));
-        $this->assertNull($this->blogService->getCategoryById($createdCategory->id));
+        $this->assertTrue($this->blogService->deleteCategoryById($createdCategory->getId()));
+        $this->assertNull($this->blogService->getCategoryById($createdCategory->getId()));
     }
 
     public function test_deleteCategoryById_categoryNotFound()
@@ -184,12 +187,12 @@ class BlogServiceTest extends TestCase {
         $createdCategory = $this->blogService->createCategory($category);
 
         $this->assertNotNull($createdCategory);
-        $this->assertEquals(1, $createdCategory->status);
+        $this->assertEquals(self::$PUBLISHED, $createdCategory->getStatus());
 
-        $this->assertNotFalse($this->blogService->disableCategoryById($createdCategory->id));
+        $this->assertNotFalse($this->blogService->disableCategoryById($createdCategory->getId()));
 
-        $category = $this->blogService->getCategoryById($createdCategory->id);
-        $this->assertEquals(2, $category->status);
+        $category = $this->blogService->getCategoryById($createdCategory->getId());
+        $this->assertEquals(self::$DISABLED, $category->getStatus());
     }
 
     public function test_disableCategoryById_categoryNotFound()
@@ -203,12 +206,12 @@ class BlogServiceTest extends TestCase {
         $createdPost = $this->blogService->createPost($post);
 
         $this->assertNotNull($createdPost);
-        $this->assertEquals(1, $createdPost->status);
+        $this->assertEquals(self::$PUBLISHED, $createdPost->getStatus());
 
-        $this->assertNotFalse($this->blogService->disablePostById($createdPost->id));
+        $this->assertNotFalse($this->blogService->disablePostById($createdPost->getId()));
 
-        $post = $this->blogService->getPostById($createdPost->id);
-        $this->assertEquals(2, $post->status);
+        $post = $this->blogService->getPostById($createdPost->getId());
+        $this->assertEquals(self::$DISABLED, $post->getStatus());
     }
 
     public function test_disablePostById_postNotFound()
@@ -220,8 +223,7 @@ class BlogServiceTest extends TestCase {
     {
         $this->blogService->createCategory($this->getSampleCategory());
 
-        $disabledCategory = $this->getSampleCategory();
-        $disabledCategory->status = 2;
+        $disabledCategory = $this->getSampleCategory(self::$DISABLED);
         $this->blogService->createCategory($disabledCategory);
 
         $categories = $this->blogService->getAllCategories();
@@ -246,8 +248,7 @@ class BlogServiceTest extends TestCase {
         $this->blogService->createCategory($this->getSampleCategory());
         $this->blogService->createCategory($this->getSampleCategory());
 
-        $disabledCategory = $this->getSampleCategory();
-        $disabledCategory->status = 2;
+        $disabledCategory = $this->getSampleCategory(self::$DISABLED);
         $this->blogService->createCategory($disabledCategory);
 
         $categories = $this->blogService->getAllCategories(null, false);
@@ -261,16 +262,16 @@ class BlogServiceTest extends TestCase {
         $parentCategory = $this->blogService->createCategory($this->getSampleCategory());
 
         $childCategory = $this->getSampleCategory();
-        $childCategory->parent_id = $parentCategory->id;
+        $childCategory->setParentId($parentCategory->getId());
 
         $createdChildCategory = $this->blogService->createCategory($childCategory);
 
         $this->assertEquals(2, count(Category::find()));
 
-        $childCategories = $this->blogService->getAllChildCategories($parentCategory->id);
+        $childCategories = $this->blogService->getAllChildCategories($parentCategory->getId());
         $this->assertEquals(1, count($childCategories));
 
-        $this->assertEquals($createdChildCategory->id, $childCategories[0]->id);
+        $this->assertEquals($createdChildCategory->getId(), $childCategories[0]->getId());
     }
 
     public function test_getAllRootCategories()
@@ -278,7 +279,7 @@ class BlogServiceTest extends TestCase {
         $parentCategory = $this->blogService->createCategory($this->getSampleCategory());
 
         $childCategory = $this->getSampleCategory();
-        $childCategory->parent_id = $parentCategory->id;
+        $childCategory->setParentId($parentCategory->getId());
 
         $this->blogService->createCategory($childCategory);
 
@@ -287,8 +288,28 @@ class BlogServiceTest extends TestCase {
         $rootCategories = $this->blogService->getAllRootCategories();
         $this->assertEquals(1, count($rootCategories));
 
-        $this->assertEquals($parentCategory->id, $rootCategories[0]->id);
+        $this->assertEquals($parentCategory->getId(), $rootCategories[0]->getId());
     }
+
+    public function test_getAllActivePosts()
+    {
+        $this->blogService->createPost($this->getSamplePost());
+        $this->blogService->createPost($this->getSamplePost(self::$DISABLED));
+
+        $posts = $this->blogService->getAllActivePosts();
+
+        $this->assertEquals(1, count($posts));
+    }
+
+    public function test_getAllActivePosts_withLimit()
+    {
+        $this->blogService->createPost($this->getSamplePost());
+        $this->blogService->createPost($this->getSamplePost());
+
+        $posts = $this->blogService->getAllActivePosts(1);
+
+        $this->assertEquals(1, count($posts));
+    }    
 
     public function test_getAllPosts()
     {
@@ -304,11 +325,10 @@ class BlogServiceTest extends TestCase {
     {
         $this->blogService->createPost($this->getSamplePost());
 
-        $disabledPost = $this->getSamplePost();
-        $disabledPost->status = 2;
+        $disabledPost = $this->getSamplePost(self::$DISABLED);
         $this->blogService->createPost($disabledPost);
 
-        $posts = $this->blogService->getAllPosts(true);
+        $posts = $this->blogService->getAllPosts(1);
 
         $this->assertEquals(1, count($posts));
     }
@@ -347,7 +367,7 @@ class BlogServiceTest extends TestCase {
         $createdTag = $this->blogService->createTag($tag);
         $this->assertNotNull($createdTag);
 
-        $this->assertEmpty($this->blogService->getAllPostsWithTagName($createdTag->name));
+        $this->assertEmpty($this->blogService->getAllPostsWithTagName($createdTag->getName()));
     }
 
     public function test_getAllPostsWithTagNames()
@@ -387,14 +407,14 @@ class BlogServiceTest extends TestCase {
     public function test_getAllPostsInCategoryId()
     {
         $category = $this->blogService->createCategory($this->getSampleCategory());
-        $categoryId = $category->id;
+        $categoryId = $category->getId();
 
         $post = $this->getSamplePost();
-        $post->category_id = $categoryId;
+        $post->setCategoryId($categoryId);
         $this->blogService->createPost($post);
 
         $post = $this->getSamplePost();
-        $post->category_id = $categoryId;
+        $post->setCategoryId($categoryId);
         $this->blogService->createPost($post);
 
         $allPosts = $this->blogService->getAllPostsInCategoryId($categoryId);
@@ -405,18 +425,18 @@ class BlogServiceTest extends TestCase {
     public function test_getAllPostsInCategoryId_includesChildrenCategories()
     {
         $parentCategory = $this->blogService->createCategory($this->getSampleCategory());
-        $parentCategoryId = $parentCategory->id;
+        $parentCategoryId = $parentCategory->getId();
 
         $childCategory = $this->getSampleCategory();
-        $childCategory->parent_id = $parentCategoryId;
+        $childCategory->setParentId($parentCategoryId);
         $childCategory = $this->blogService->createCategory($childCategory);
 
         $post = $this->getSamplePost();
-        $post->category_id = $parentCategoryId;
+        $post->setCategoryId($parentCategoryId);
         $this->blogService->createPost($post);
 
         $post = $this->getSamplePost();
-        $post->category_id = $childCategory->id;
+        $post->setCategoryId($childCategory->getId());
         $this->blogService->createPost($post);
 
         $allPosts = $this->blogService->getAllPostsInCategoryId($parentCategoryId);
@@ -432,14 +452,14 @@ class BlogServiceTest extends TestCase {
     public function test_getAllPostsInCategoryId_withLimit()
     {
         $category = $this->blogService->createCategory($this->getSampleCategory());
-        $categoryId = $category->id;
+        $categoryId = $category->getId();
 
         $post = $this->getSamplePost();
-        $post->category_id = $categoryId;
+        $post->setCategoryId($categoryId);
         $this->blogService->createPost($post);
 
         $post = $this->getSamplePost();
-        $post->category_id = $categoryId;
+        $post->setCategoryId($categoryId);
         $this->blogService->createPost($post);
 
         $allPosts = $this->blogService->getAllPostsInCategoryId($categoryId, true, 1);
@@ -450,15 +470,14 @@ class BlogServiceTest extends TestCase {
     public function test_getAllPostsInCategoryId_allStatuses()
     {
         $category = $this->blogService->createCategory($this->getSampleCategory());
-        $categoryId = $category->id;
+        $categoryId = $category->getId();
 
-        $post = $this->getSamplePost();
-        $post->category_id = $categoryId;
+        $post = $this->getSamplePost(self::$PUBLISHED);
+        $post->setCategoryId($categoryId);
         $this->blogService->createPost($post);
 
-        $post = $this->getSamplePost();
-        $post->category_id = $categoryId;
-        $post->status = 2;
+        $post = $this->getSamplePost(self::$DISABLED);
+        $post->setCategoryId($categoryId);
         $this->blogService->createPost($post);
 
         $allPosts = $this->blogService->getAllPostsInCategoryId($categoryId, true);
@@ -489,7 +508,7 @@ class BlogServiceTest extends TestCase {
             'test-three'
         ]);
 
-        $allTags = $this->blogService->getAllTagsForPostId($post->id);
+        $allTags = $this->blogService->getAllTagsForPostId($post->getId());
         $this->assertNotEmpty($allTags);
         $this->assertEquals(3, count($allTags));
     }
@@ -498,7 +517,7 @@ class BlogServiceTest extends TestCase {
     {
         $category = $this->blogService->createCategory($this->getSampleCategory());
 
-        $this->assertNotNull($this->blogService->getCategoryById($category->id));
+        $this->assertNotNull($this->blogService->getCategoryById($category->getId()));
     }
 
     public function test_getCategoryById_notFound()
@@ -510,7 +529,7 @@ class BlogServiceTest extends TestCase {
     {
         $category = $this->blogService->createCategory($this->getSampleCategory());
 
-        $this->assertNotNull($this->blogService->getCategoryBySlug($category->slug));
+        $this->assertNotNull($this->blogService->getCategoryBySlug($category->getSlug()));
     }
 
     public function test_getCategoryBySlug_notFound()
@@ -556,7 +575,7 @@ class BlogServiceTest extends TestCase {
     {
         $post = $this->blogService->createPost($this->getSamplePost());
 
-        $this->assertNotNull($this->blogService->getPostById($post->id));
+        $this->assertNotNull($this->blogService->getPostById($post->getId()));
     }
 
     public function test_getPostById_notFound()
@@ -568,7 +587,7 @@ class BlogServiceTest extends TestCase {
     {
         $post = $this->blogService->createPost($this->getSamplePost());
 
-        $this->assertNotNull($this->blogService->getPostBySlug($post->slug));
+        $this->assertNotNull($this->blogService->getPostBySlug($post->getSlug()));
     }
 
     public function test_getPostBySlug_notFound()
@@ -582,7 +601,7 @@ class BlogServiceTest extends TestCase {
 
         $this->blogService->createTag($tag);
 
-        $this->assertNotNull($this->blogService->getTagByName($tag->name));
+        $this->assertNotNull($this->blogService->getTagByName($tag->getName()));
     }
 
     public function test_getTagByName_notFound()
@@ -598,9 +617,33 @@ class BlogServiceTest extends TestCase {
         $tag2 = $this->getSampleTag();
         $this->blogService->createTag($tag2);
 
-        $tags = $this->blogService->getTagsByNames([$tag1->name, $tag2->name]);
+        $tags = $this->blogService->getTagsByNames([$tag1->getName(), $tag2->getName()]);
         $this->assertNotEmpty($tags);
         $this->assertCount(2, $tags);
+    }
+
+    public function test_publishCategory()
+    {
+        $category = $this->blogService->createCategory($this->getSampleCategory(self::$DISABLED));
+
+        $this->assertNotNull($category->getId());
+        $this->assertEquals(self::$DISABLED, $category->getStatus());
+
+        $this->blogService->publishCategory($category);
+
+        $this->assertEquals(self::$PUBLISHED, $category->getStatus());
+    }
+
+    public function test_publishPost()
+    {
+        $post = $this->blogService->createPost($this->getSamplePost(self::$DISABLED));
+
+        $this->assertNotNull($post->getId());
+        $this->assertEquals(self::$DISABLED, $post->getStatus());
+
+        $this->blogService->publishPost($post);
+
+        $this->assertEquals(self::$PUBLISHED, $post->getStatus());
     }
 
     public function test_removeTagsFromPostId()
@@ -610,15 +653,15 @@ class BlogServiceTest extends TestCase {
             'remove'
         ]);
 
-        $tags = $this->blogService->getAllTagsForPostId($post->id);
+        $tags = $this->blogService->getAllTagsForPostId($post->getId());
         $this->assertEquals(2, count($tags));
 
         $tagId = null;
         foreach ($tags as $tag)
         {
-            if ($tag->name == 'remove')
+            if ($tag->getName() == 'remove')
             {
-                $tagId = $tag->id;
+                $tagId = $tag->getId();
             }
         }
 
@@ -627,11 +670,11 @@ class BlogServiceTest extends TestCase {
             $this->fail('Tag not found by name');
         }
 
-        $this->assertTrue($this->blogService->removeTagsFromPostId($post->id, [$tagId]));
+        $this->assertTrue($this->blogService->removeTagsFromPostId($post->getId(), [$tagId]));
 
-        $tags = $this->blogService->getAllTagsForPostId($post->id);
+        $tags = $this->blogService->getAllTagsForPostId($post->getId());
         $this->assertEquals(1, count($tags));
-        $this->assertEquals('test', $tags[0]->name);
+        $this->assertEquals('test', $tags[0]->getName());
     }
 
     public function test_removeTagsFromPostId_postNotFound()
@@ -646,13 +689,13 @@ class BlogServiceTest extends TestCase {
             'remove'
         ]);
 
-        $this->assertEquals(2, count($this->blogService->getAllTagsForPostId($post->id)));
+        $this->assertEquals(2, count($this->blogService->getAllTagsForPostId($post->getId())));
 
-        $this->assertTrue($this->blogService->removeTagNamesFromPostId($post->id, ['remove']));
+        $this->assertTrue($this->blogService->removeTagNamesFromPostId($post->getId(), ['remove']));
 
-        $tags = $this->blogService->getAllTagsForPostId($post->id);
+        $tags = $this->blogService->getAllTagsForPostId($post->getId());
         $this->assertEquals(1, count($tags));
-        $this->assertEquals('test', $tags[0]->name);
+        $this->assertEquals('test', $tags[0]->getName());
     }
 
     public function test_removeTagNamesFromPostId_postNotFound()
@@ -667,10 +710,10 @@ class BlogServiceTest extends TestCase {
         $categoryName = 'Updated category';
         $category->name = $categoryName;
 
-        $updatedCategory = $this->blogService->updateCategory($category, $category->id);
+        $updatedCategory = $this->blogService->updateCategory($category, $category->getId());
 
         $this->assertNotNull($updatedCategory);
-        $this->assertEquals($categoryName, $updatedCategory->name);
+        $this->assertEquals($categoryName, $updatedCategory->getName());
     }
 
     public function test_updateCategory_categoryNameExists()
@@ -678,11 +721,11 @@ class BlogServiceTest extends TestCase {
         $category = $this->blogService->createCategory($this->getSampleCategory());
         $secondCategory = $this->blogService->createCategory($this->getSampleCategory());
 
-        $secondCategory->name = $category->name;
+        $secondCategory->name = $category->getName();
 
         $this->expectException(ValidationException::class);
 
-        $this->blogService->updateCategory($secondCategory, $secondCategory->id);
+        $this->blogService->updateCategory($secondCategory, $secondCategory->getId());
     }
 
     public function test_updatePost()
@@ -690,12 +733,12 @@ class BlogServiceTest extends TestCase {
         $post = $this->blogService->createPost($this->getSamplePost());
 
         $title = 'Updated title';
-        $post->title = $title;
+        $post->setTitle($title);
 
-        $updatedPost = $this->blogService->updatePost($post, $post->id);
+        $updatedPost = $this->blogService->updatePost($post, $post->getId());
 
         $this->assertNotNull($updatedPost);
-        $this->assertEquals($title, $updatedPost->title);
+        $this->assertEquals($title, $updatedPost->getTitle());
     }
 
     public function test_updatePost_titleExists()
@@ -703,32 +746,34 @@ class BlogServiceTest extends TestCase {
         $post = $this->blogService->createPost($this->getSamplePost());
         $secondPost = $this->blogService->createPost($this->getSamplePost());
 
-        $secondPost->title = $post->title;
+        $secondPost->setTitle($post->title);
 
         $this->expectException(ValidationException::class);
 
-        $this->blogService->updatePost($secondPost, $secondPost->id);
+        $this->blogService->updatePost($secondPost, $secondPost->getId());
     }
 
-    private function getSampleCategory()
+    private function getSampleCategory($status = 1)
     {
         $name = 'Test Category ' . uniqid();
 
         $category = new Category();
-        $category->name = $name;
+        $category->setName($name);
+        $category->setStatus($status);
 
         return $category;
     }
 
-    private function getSamplePost()
+    private function getSamplePost($status = 1)
     {
         $title = 'Test Title ' . uniqid();
         $body = 'Test Body';
 
         $post = new Post();
-        $post->title = $title;
-        $post->body = $body;
-        $post->author_id = 1;
+        $post->setTitle($title);
+        $post->setBody($body);
+        $post->setAuthorId(1);
+        $post->setStatus($status);
 
         return $post;
     }
@@ -738,7 +783,7 @@ class BlogServiceTest extends TestCase {
         $name = 'tag-' . uniqid();
 
         $tag = new Tag();
-        $tag->name = $name;
+        $tag->setName($name);
 
         return $tag;
     }
