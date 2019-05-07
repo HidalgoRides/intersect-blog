@@ -21,8 +21,8 @@
       }
     },
     "require": {
-      "hidalgo-rides/intersect-core": "^1.0",
-      "hidalgo-rides/intersect-database": "^1.0"
+      "hidalgo-rides/intersect-core": "dev-release/1.1.x",
+      "hidalgo-rides/intersect-database": "dev-release/1.1.x"
     },
     "require-dev": {
       "phpunit/phpunit": "^7"
