@@ -26,7 +26,10 @@ class BlogServiceTest extends TestCase {
 
         $this->blogService = new BlogService();
 
-        $connectionSettings = new ConnectionSettings('db', 'root', 'password', 3306, 'integration_tests');
+        $connectionSettings = ConnectionSettings::builder('db', 'root', 'password')
+            ->port(3306)
+            ->database('integration_tests')
+            ->build();
         $connection = ConnectionFactory::get('mysql', $connectionSettings);
 
         $connection->query('truncate ib_post_tags');

@@ -14,6 +14,7 @@ use Intersect\Database\Exception\DatabaseException;
 use Intersect\Database\Connection\ConnectionFactory;
 use Intersect\Database\Connection\ConnectionSettings;
 use PHPUnit\Framework\TestListenerDefaultImplementation;
+use Intersect\Database\Connection\ConnectionRepository;
 
 class IntegrationTestListener implements TestListener {
     use TestListenerDefaultImplementation;
@@ -32,9 +33,12 @@ class IntegrationTestListener implements TestListener {
 
     public function __construct()
     {
-        $connectionSettings = new ConnectionSettings('db', 'root', 'password', 3306, 'app');
+        $connectionSettings = ConnectionSettings::builder('db', 'root', 'password')
+            ->port(3306)
+            ->database('app')
+            ->build();
         $this->connection = ConnectionFactory::get('mysql', $connectionSettings);
-        Model::setConnection($this->connection);
+        ConnectionRepository::register('default', $this->connection);
 
         $container = new Container();
         $container->getCommandRegistry()->register('blog:install', new InstallBlogCommand($this->connection));
