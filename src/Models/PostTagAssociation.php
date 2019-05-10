@@ -6,6 +6,7 @@ use Intersect\Database\Model\AssociativeModel;
 
 class PostTagAssociation extends AssociativeModel {
 
+    protected $connectionKey = 'ib_conn';
     protected $primaryKey = null;
     protected $tableName = 'ib_post_tags';
 

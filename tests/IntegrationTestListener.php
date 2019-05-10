@@ -38,7 +38,8 @@ class IntegrationTestListener implements TestListener {
             ->database('app')
             ->build();
         $this->connection = ConnectionFactory::get('mysql', $connectionSettings);
-        ConnectionRepository::register('default', $this->connection);
+        ConnectionRepository::register($this->connection);
+        ConnectionRepository::registerAlias('ib_conn');
 
         $container = new Container();
         $container->getCommandRegistry()->register('blog:install', new InstallBlogCommand($this->connection));

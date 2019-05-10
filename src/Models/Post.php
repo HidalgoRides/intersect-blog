@@ -7,6 +7,7 @@ use Intersect\Database\Model\Validation\Validation;
 
 class Post extends TemporalModel implements Validation {
 
+    protected $connectionKey = 'ib_conn';
     protected $tableName = 'ib_posts';
 
     public function getValidatorMap()

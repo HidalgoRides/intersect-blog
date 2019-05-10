@@ -7,6 +7,7 @@ use Intersect\Database\Model\Validation\Validation;
 
 class Tag extends Model implements Validation {
 
+    protected $connectionKey = 'ib_conn';
     protected $tableName = 'ib_tags';
 
     public function getValidatorMap()
