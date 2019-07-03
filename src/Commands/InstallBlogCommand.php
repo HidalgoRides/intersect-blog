@@ -25,7 +25,7 @@ class InstallBlogCommand extends AbstractCommand {
 
     public function execute($data = [])
     {
-        $this->runner->run();
+        $this->runner->migrate();
     }
 
 }
