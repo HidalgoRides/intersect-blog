@@ -6,15 +6,18 @@ use Intersect\Core\Container;
 use PHPUnit\Framework\TestSuite;
 use Intersect\Database\Model\Model;
 use PHPUnit\Framework\TestListener;
+use Intersect\Core\Storage\FileStorage;
 use Intersect\Core\Logger\ConsoleLogger;
 use Intersect\Core\Command\CommandRunner;
+use Intersect\Database\Migrations\Runner;
 use Intersect\Database\Connection\Connection;
 use Intersect\Blog\Commands\InstallBlogCommand;
+use Intersect\Blog\Providers\BlogServiceProvider;
 use Intersect\Database\Exception\DatabaseException;
 use Intersect\Database\Connection\ConnectionFactory;
 use Intersect\Database\Connection\ConnectionSettings;
-use PHPUnit\Framework\TestListenerDefaultImplementation;
 use Intersect\Database\Connection\ConnectionRepository;
+use PHPUnit\Framework\TestListenerDefaultImplementation;
 
 class IntegrationTestListener implements TestListener {
     use TestListenerDefaultImplementation;
@@ -42,7 +45,9 @@ class IntegrationTestListener implements TestListener {
         ConnectionRepository::registerAlias('ib_conn');
 
         $container = new Container();
-        $container->getCommandRegistry()->register('blog:install', new InstallBlogCommand($this->connection));
+        
+        $blogServiceProvider = new BlogServiceProvider($container);
+        $blogServiceProvider->init();
 
         $this->container = $container;
         $this->logger = new ConsoleLogger();
@@ -63,8 +68,8 @@ class IntegrationTestListener implements TestListener {
             $this->logger->info('');
 
             try {
-                $commandRunner = new CommandRunner($this->container);
-                $commandRunner->run(['', 'blog:install']);
+                $runner = new Runner($this->connection, new FileStorage(), $this->logger, $this->container->getMigrationPaths());
+                $runner->migrate();
             } catch (DatabaseException $e) {}
 
             $this->logger->info('');
