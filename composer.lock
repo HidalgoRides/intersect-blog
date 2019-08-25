@@ -4,11 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "33d4a699623bfa02b37dadf32c57fc92",
+    "content-hash": "86cf8aa72899f6036fe3b14a45000dc4",
     "packages": [
         {
             "name": "hidalgo-rides/intersect-core",
-            "version": "dev-release/1.2.x",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/HidalgoRides/intersect-core.git",
@@ -47,20 +47,20 @@
         },
         {
             "name": "hidalgo-rides/intersect-database",
-            "version": "dev-release/1.2.x",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/HidalgoRides/intersect-database.git",
-                "reference": "1ede239f5ffbf2536ecde5d9ea0763751095b423"
+                "reference": "576d3f90b50ae73099c6c6422210354121ff748a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/HidalgoRides/intersect-database/zipball/1ede239f5ffbf2536ecde5d9ea0763751095b423",
-                "reference": "1ede239f5ffbf2536ecde5d9ea0763751095b423",
+                "url": "https://api.github.com/repos/HidalgoRides/intersect-database/zipball/576d3f90b50ae73099c6c6422210354121ff748a",
+                "reference": "576d3f90b50ae73099c6c6422210354121ff748a",
                 "shasum": ""
             },
             "require": {
-                "hidalgo-rides/intersect-core": "dev-release/1.2.x"
+                "hidalgo-rides/intersect-core": "1.2.*"
             },
             "require-dev": {
                 "phpunit/phpunit": "^7"
@@ -82,7 +82,7 @@
                 }
             ],
             "description": "Database abstraction layer used throughout Intersect libraries and projects.",
-            "time": "2019-08-24T04:23:35+00:00"
+            "time": "2019-08-25T02:31:51+00:00"
         }
     ],
     "packages-dev": [
@@ -1560,10 +1560,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "hidalgo-rides/intersect-core": 20,
-        "hidalgo-rides/intersect-database": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
