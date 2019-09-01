@@ -10,7 +10,7 @@ class BlogSchemaV11534999063 extends AbstractMigration {
      */
     public function up()
     {
-        $this->schema->createTable('ib_categories', function(Blueprint $blueprint) {
+        $this->schema->createTableIfNotExists('ib_categories', function(Blueprint $blueprint) {
             $blueprint->increments('id');
             $blueprint->string('name', 50);
             $blueprint->string('slug', 50);
@@ -24,13 +24,13 @@ class BlogSchemaV11534999063 extends AbstractMigration {
             $blueprint->index('parent_id');
         });
 
-        $this->schema->createTable('ib_post_tags', function(Blueprint $blueprint) {
+        $this->schema->createTableIfNotExists('ib_post_tags', function(Blueprint $blueprint) {
             $blueprint->integer('post_id');
             $blueprint->integer('tag_id');
             $blueprint->primary(['post_id', 'tag_id']);
         });
 
-        $this->schema->createTable('ib_posts', function(Blueprint $blueprint) {
+        $this->schema->createTableIfNotExists('ib_posts', function(Blueprint $blueprint) {
             $blueprint->increments('id');
             $blueprint->integer('category_id')->nullable();
             $blueprint->string('title', 255);
@@ -44,7 +44,7 @@ class BlogSchemaV11534999063 extends AbstractMigration {
             $blueprint->unique('slug', 'uq_post_slug');
         });
 
-        $this->schema->createTable('ib_tags', function(Blueprint $blueprint) {
+        $this->schema->createTableIfNotExists('ib_tags', function(Blueprint $blueprint) {
             $blueprint->increments('id');
             $blueprint->string('name', 25);
             $blueprint->text('meta_data')->nullable();
@@ -57,10 +57,10 @@ class BlogSchemaV11534999063 extends AbstractMigration {
      */
     public function down()
     {
-        $this->schema->dropTable('ib_tags');
-        $this->schema->dropTable('ib_posts');
-        $this->schema->dropTable('ib_post_tags');
-        $this->schema->dropTable('ib_categories');
+        $this->schema->dropTableIfExists('ib_tags');
+        $this->schema->dropTableIfExists('ib_posts');
+        $this->schema->dropTableIfExists('ib_post_tags');
+        $this->schema->dropTableIfExists('ib_categories');
     }
 
 }

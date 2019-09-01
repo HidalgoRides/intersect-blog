@@ -9,7 +9,7 @@ class BlogServiceProvider extends ServiceProvider {
 
     public function init()
     {
-        $this->container->bind(BlogService::class, BlogService::class);
+        $this->container->bind(BlogService::class);
         
         $this->container->migrationPath(dirname(dirname(__FILE__)) . '/Migrations');
     }

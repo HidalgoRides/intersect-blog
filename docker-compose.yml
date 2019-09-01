@@ -8,11 +8,7 @@ services:
       context: .
     volumes:
       - '.:/var/www'
-    entrypoint: php vendor/bin/phpunit
-    ports:
-      - '8080:80'
     depends_on:
-      - composer
       - db
 
   db:
@@ -26,13 +22,6 @@ services:
       - '3306:3306'
     volumes:
       - db-data:/var/lib/mysql
-
-  composer:
-    restart: 'no'
-    image: composer
-    command: install
-    volumes:
-      - .:/app
 
 volumes:
   db-data:
