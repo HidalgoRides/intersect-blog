@@ -38,12 +38,22 @@ class PostTagAssociation extends AssociativeModel {
         $this->tag_id = $tagId;
     }
 
-    protected function getColumnOneName()
+    public function getColumnOneClassName() 
+    {
+        return Post::class;
+    }
+
+    public function getColumnOneName()
     {
         return 'post_id';
     }
 
-    protected function getColumnTwoName()
+    public function getColumnTwoClassName() 
+    {
+        return Tag::class;
+    }
+
+    public function getColumnTwoName()
     {
         return 'tag_id';
     }
